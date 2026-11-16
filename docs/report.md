@@ -44,9 +44,11 @@
 
 **代表案例：重試成功。** `gpt-oss:20b` 首次呼叫 `read` 時帶入 `optional: false`，收到 `optional: must be equal to constant` 的驗證錯誤。第二次呼叫成功讀取資料，最終正確回覆台北三個欄位，也沒有捏造高雄資料。如果只看最終回答，這次與一次讀取就成功的案例都會被評為正確；若要評估 Agent 的運作，還應記錄首呼成功與錯誤恢復。
 
-<!-- 放入截圖後可解除註解：
-![首次工具呼叫驗證失敗、重試後成功](../results/evidence/tool-retry.png)
--->
+![首次工具呼叫驗證失敗-圖中以gpt-oss 20bj為例](../results/evidence/tool-retry1.png)
+
+![重試後成功](../results/evidence/tool-retry2.png)
+
+
 
 ## 3. 測試 B：估算權重儲存空間
 
