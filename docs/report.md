@@ -4,11 +4,11 @@
 
 ## 摘要
 
-    利用同一台桌機且透過 OpenClaw 與 Ollama 測試四個本地模型，觀察它們能否讀取指定檔案、如實回報內容，以及正確估算模型權重的儲存空間。測試有兩個值得追查的結果：`gpt-oss:20b` 第一次讀檔呼叫未通過參數驗證，重試後仍答對；在另一題中，它則把「80 億」寫成「800 億」，後續算式雖然一致，答案卻差了十倍。這些案例顯示，只評分最終答案會漏掉有用的診斷資訊。
+利用同一台桌機且透過 OpenClaw 與 Ollama 測試四個本地模型，觀察它們能否讀取指定檔案、如實回報內容，以及正確估算模型權重的儲存空間。測試有兩個值得追查的結果：`gpt-oss:20b` 第一次讀檔呼叫未通過參數驗證，重試後仍答對；在另一題中，它則把「80 億」寫成「800 億」，後續算式雖然一致，答案卻差了十倍。這些案例顯示，只評分最終答案會漏掉有用的診斷資訊。
 
 ## 1. 測試目的與環境
 
- 想要知道：本地模型放進 Agent 介面後，能否正確使用工具、根據資料回答，以及把自然語言中的數字一路帶到正確的計算結果。我的工作包括部署模型、設計題目與預期答案、檢查工具紀錄，以及比對模型回覆中的中間數值。
+想要知道：本地模型放進 Agent 介面後，能否正確使用工具、根據資料回答，以及把自然語言中的數字一路帶到正確的計算結果。我的工作包括部署模型、設計題目與預期答案、檢查工具紀錄，以及比對模型回覆中的中間數值。
 
 | 項目 | 設定 |
 | --- | --- |
@@ -44,9 +44,13 @@
 
 **代表案例：重試成功。** `gpt-oss:20b` 首次呼叫 `read` 時帶入 `optional: false`，收到 `optional: must be equal to constant` 的驗證錯誤。第二次呼叫成功讀取資料，最終正確回覆台北三個欄位，也沒有捏造高雄資料。如果只看最終回答，這次與一次讀取就成功的案例都會被評為正確；若要評估 Agent 的運作，還應記錄首呼成功與錯誤恢復。
 
-![首次工具呼叫驗證失敗-圖中以gpt-oss 20bj為例](../results/evidence/tool-retry1.png)
+![首次工具呼叫驗證失敗-圖中以gpt-oss 20b為例](../results/evidence/tool-retry1.png)
+
+**圖 1：** gpt-oss:20b 帶入 `optional: false`，工具參數驗證未通過。
 
 ![重試後成功](../results/evidence/tool-retry2.png)
+
+**圖 2：** gpt-oss:20b 自行修正後通過。
 
 
 
@@ -67,12 +71,29 @@
 
 **代表案例：算式揭露錯誤位置。** `gpt-oss:20b` 的 160 GB／40 GB 看起來像 GB 換算出錯，但列出的算式顯示，該輪錯在把「80 億」寫成了「800 億」。Ministral 的 800 億題則顯示，即使題目直接給完整數字，模型也可能在代入時改寫它。後續評分可逐項檢查「讀出的參數量」、「代入算式的參數量」、「每權重的位元數」與「最終單位換算」。
 
-![圖為gemma4正確回答取計算正確 80 億權重](../results/evidence/80B-gemma.png)
-![圖為ministral-3將 80 億位元權重計算錯誤](../results/evidence/80B-mi.png)
-![圖為ministral-3將數字型態 80 億位元權重計算錯誤](../results/evidence/80B(int)MI.png)
-![圖為granite4將 80 億元權重位元寫錯](../results/evidence/80-gr.png)
-![圖為gpt-oss:20b將 80 億錯寫成 800 億](../results/evidence/80B(CH)gpt.png)
-![圖同為gpt-oss:20b正確以數字型態 80 億計算成功](../results/evidence/80(INT)gpt.png)
+![圖為gemma4正確回答取計算正確 80 億參數](../results/evidence/80B-gemma.png)
+
+**圖 1：** gemma4:12b 精準通過測試。
+
+![圖為ministral-3將 80 億參數計算錯誤](../results/evidence/80B-mi.png)
+
+**圖 2：** ministral-3:latest 觀念正確但計算錯誤。
+
+![圖為ministral-3將數字型態 800 億參數計算錯誤](../results/evidence/80B(int)MI.png)
+
+**圖 3：** ministral-3:latest 換個數值仍計算錯誤。
+
+![圖為granite4將 80 億參數位元寫錯](../results/evidence/80-gr.png)
+
+**圖 4：** granite4:latest 觀念些許錯誤且參數寫錯。
+
+![圖為gpt-oss:20b將 80 億參數錯寫成 800 億參數](../results/evidence/80B(CH)gpt.png)
+
+**圖 5：** gpt-oss:20b 帶入計算時單位換算錯誤。
+
+![圖同為gpt-oss:20b正確以數字型態 80 億參數計算成功](../results/evidence/80(INT)gpt.png)
+
+**圖 6：** gpt-oss:20b 換成阿拉伯數字後計算成功。
 
 ## 4. 限制與後續驗證
 
