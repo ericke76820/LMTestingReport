@@ -77,7 +77,7 @@
 
 ![圖為ministral-3將 80 億參數計算錯誤](../results/evidence/80B-mi.png)
 
-**圖 2：** ministral-3:latest 觀念正確但計算錯誤。
+**圖 2：** Ministral 將 80 億誤寫為 800 億，並錯將每 4 個 4-bit 權重視為占用 1 byte。
 
 ![圖為ministral-3將數字型態 800 億參數計算錯誤](../results/evidence/80B(int)MI.png)
 
@@ -89,7 +89,7 @@
 
 ![圖為gpt-oss:20b將 80 億參數錯寫成 800 億參數](../results/evidence/80B(CH)gpt.png)
 
-**圖 5：** gpt-oss:20b 帶入計算時單位換算錯誤。
+**圖 5：** gpt-oss:20b 將「80 億」誤寫為 80,000,000,000；後續乘法與 GB 換算符合這個錯誤的參數量。
 
 ![圖同為gpt-oss:20b正確以數字型態 80 億參數計算成功](../results/evidence/80(INT)gpt.png)
 
