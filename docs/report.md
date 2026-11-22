@@ -73,7 +73,7 @@
 
 ![圖為gemma4正確回答取計算正確 80 億參數](../results/evidence/80B-gemma.png)
 
-**圖 1：** gemma4:12b 精準通過測試。
+**圖 1：** 本輪 FP16 與 4-bit 純權重估算正確。
 
 ![圖為ministral-3將 80 億參數計算錯誤](../results/evidence/80B-mi.png)
 
